@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>商品列表</title>
+    <link rel="stylesheet" href="../assets/layui-v2.4.5/layui/css/layui.css">
+    <script src="../jquery-1.10.1.min.js"></script>
+    <script src="../assets/layui-v2.4.5/layui/layui.js"></script>
+    <script src="../js/thesame.js"></script>
+    <script src="../js/jquery.cookie.js"></script>
+    <script src="../js/Jgoods_list.js"></script>
+
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+
+        <div class="layui-header">
+            <div class="layui-logo">后台管理系统</div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item"></li>
+                <li class="layui-nav-item" id="dengji" style="color: #fff;"></li>
+                <li class="layui-nav-item">
+                <a href="">你好</a>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <span id='username' style="color: #fff;"></span>
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img" style="line-height: 60px;display: inlin-block;margin-top: 10px;">
+
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="">基本资料</a>
+                        </dd>
+                        <dd>
+                            <a href="">安全设置</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item" id="out" style="cursor: pointer;">
+                    <a href="###">退出</a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                <a class="" href="javascript:;">商品管理</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="goods_list.html">商品列表</a></dd>
+                    <dd><a href="goods_type.html">商品分类</a></dd>
+                    <dd><a href="goods_add.html">添加商品</a></dd>
+                </dl>
+                </li>
+                <li class="layui-nav-item">
+                <a href="javascript:;">用户管理</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="userlist.html">用户列表</a></dd>
+                    <dd><a href="user_add.html">添加用户</a></dd>
+                </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">订单管理</a>
+                    <dl class="layui-nav-child">
+                    <dd><a href="order_list.html">订单列表</a></dd>
+                    </dl>
+                </li>
+            </ul>
+            </div>
+        </div>
+        
+        <div class="layui-body">
+            <!-- 内容主体区域 -->
+            <div style="padding: 40px 20px 15px 66px;">
+
+                <table class="layui-hide" id="demo" lay-filter="test"></table>
+
+                <script type="text/html" id="toolbarDemo">
+                    <button class="layui-btn" id="add" style="margin-right:5px">
+                        <i class="layui-icon">&#xe608;</i> 添加
+                    </button>
+                    <button class="layui-btn layui-btn-primary" id="dele" lay-event="getCheckData">
+                        <i class="layui-icon">&#xe640;</i> 删除
+                    </button>
+                    <div class="layui-inline" style="margin-left:210px">
+                        <div class="layui-input-inline" style="width: 250px;">
+                            <input type="text" id="Sgoodsname" autocomplete="off" class="layui-input" placeholder="请输入商品名称">
+                        </div>
+                    </div>
+                    <div class="layui-inline" style="margin-left:20px">
+                        <select name="type" id="Stype" lay-verify="">
+                            <option value="">请选择分类</option>
+                            <option value="手机">手机</option>
+                            <option value="电脑">电脑</option>
+                            <option value="平板">平板</option>
+                            <option value="配件">配件</option>
+                            <option value="耳机">耳机</option>
+                            <option value="音响">音响</option>
+                            <option value="办公用品">办公用品</option>
+                            <option value="其他">其他</option>
+                        </select>   
+                    </div>   
+                    <div class="layui-inline" style="margin-left:30px">
+                        <button class="layui-btn" id="search" style="width:80px">搜索</button>
+                    </div>   
+                   
+                </script>
+                <div class="layui-tab layui-tab-brief" lay-filter="demo">
+                  
+                <script type="text/html" id="barDemo">
+                    <!-- 编辑按钮 -->
+                    <button class="layui-btn layui-btn-xs" lay-event="edit" style="margin-left:20px">
+                        <i class="layui-icon">&#xe642;</i>
+                    </button>
+                    <!-- 删除按钮 -->
+                    <button class="layui-btn layui-btn-primary layui-btn-xs" lay-event="del">
+                        <i class="layui-icon">&#xe640;</i>
+                    </button>
+                    <a class="layui-btn layui-bg-gray layui-btn-xs xia">下架</a>
+                    
+                </script>
+                
+                <script>
+                    layui.use(['table','laypage'], function(){
+                        var table = layui.table,
+                            laypage = layui.laypage;
+                        
+                        load();
+                        // 表格渲染的封装
+                        function load(){
+                            table.render({
+                                elem: '#demo'  // 表的id
+                                ,width: 1300
+                                ,url:'/goods_list'
+                                ,page: true
+                                ,toolbar: '#toolbarDemo'
+                                ,title: '用户数据表'
+                                ,cols: [[
+                                    {type:'checkbox', fixed: 'left'}
+                                    ,{field:'_id', title:'ID', width:170, fixed:'left', unresize:true, sort:true}
+                                    ,{field:'goodsname', title:'商品名称', width:160, edit: 'text',sort: true}
+                                    ,{field:'type', title:'分类', width:128, edit: 'text'}
+                                    ,{field:'oldprice', title:'价格(原价)', width:115, edit: 'text'}
+                                    ,{field:'nowprice', title:'价格(现价)', width:115 }
+                                    ,{field:'repertory', title:'库存',  width:110}
+                                    ,{field:'status', title:'状态',  width:110, sort: true}
+                                    ,{field:'addTime', title:'添加时间', width:143, sort: true}
+                                    ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:185}
+                                ]]
+                            });
+                        }
+                        
+                        
+                        // 删除多条事件
+                        var str = '';
+                        table.on('toolbar(test)', function(obj){
+                            var checkStatus = table.checkStatus(obj.config.id);
+                            for(let key in checkStatus.data){
+                                str += checkStatus.data[key]._id + ','; 
+                            }
+                            
+                            // 发送ajax请求
+                            let res = confirm('您确定要删除多行吗？');
+                            if(res){
+                                let xhr = new XMLHttpRequest();
+                                xhr.open('get', `/goods_list/delAll?str=${str}`, true);
+                                xhr.send();
+                            }
+                            // 表格重新渲染
+                            location.reload();
+                        });
+                       
+                        //监听行工具事件
+                        table.on('tool(test)', function(obj){
+                            var data = obj.data;
+                            console.log(data);   
+                            // 删除
+                            if(obj.event === 'del'){
+                                layer.confirm('真的删除行么', function(index){
+                                obj.del();
+                                layer.close(index);
+
+                                // 发送数据请求
+                                let xhr = new XMLHttpRequest();
+                                xhr.open('post','/goods_list/del',true);
+                                xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                                let req = `_id=${data._id}`;
+                                xhr.send(req);
+                                });
+
+                            // 编辑
+                            } else if(obj.event === 'edit'){
+                                let id = data._id;
+                                location.href = 'http://localhost:10001/html/goods_add.html?id='+id;
+                            }
+                        });
+
+                        //分页
+                        laypage.render({
+                            elem: 'pageDemo' //分页容器的id
+                            ,count: 100 //总页数
+                            ,skin: '#1E9FFF' //自定义选中色值
+                            ,skip: true //开启跳页
+                            ,jump: function(obj, first){
+                                if(!first){
+                                    layer.msg('第'+ obj.curr +'页', {offset: 'b'});
+                                }
+                            }
+                        });
+
+                    });
+                </script>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        //JavaScript代码区域
+        layui.use('element', function(){
+            var element = layui.element;
+        });
+
+        layui.use('table', function(){
+            var table = layui.table;
+        });
+
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,9 @@
+.layui-body h2 { display: inline-block; margin-left: 15px; }
+.layui-body ul { float: right; }
+.layui-body ul li { float: left; width: 90px; font-size: 14px; text-align: center; }
+.layui-body section { margin-top: 10px; height: 200px; border-top: 1px solid #999; border-bottom: 1px solid #999; }
+.layui-body section div { float: left; height: 100%; width: 33.3%; text-align: center; vertical-align: middle; }
+.layui-body section div span { display: inline-block; margin-top: 60px; font-size: 46px; color: coral; }
+.layui-body section div p { font-size: 16px; margin-top: 18px; }
+
+/*# sourceMappingURL=center.css.map */

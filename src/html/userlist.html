@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>用户列表</title>
+  <link rel="stylesheet" href="../assets/layui-v2.4.5/layui/css/layui.css">
+  <script src="../jquery-1.10.1.min.js"></script>
+  <script src="../assets/layui-v2.4.5/layui/layui.js"></script>
+  <script src="../js/jquery.cookie.js"></script>
+  <script src="../js/thesame.js"></script>
+
+</head>
+
+<body class="layui-layout-body">
+  <div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+      <div class="layui-logo">后台管理系统</div>
+      <!-- 头部区域（可配合layui已有的水平导航） -->
+      <ul class="layui-nav layui-layout-left">
+        <li class="layui-nav-item"></li>
+        <li class="layui-nav-item" id="dengji"></li>
+        <li class="layui-nav-item">
+          <a href="">你好</a>
+        </li>
+      </ul>
+      <ul class="layui-nav layui-layout-right">
+        <li class="layui-nav-item">
+          <span id='username'></span>
+          <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+
+          <dl class="layui-nav-child">
+            <dd>
+              <a href="">基本资料</a>
+            </dd>
+            <dd>
+              <a href="">安全设置</a>
+            </dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item" id="out" style="cursor: pointer;">
+          <a href="###"></a>退出</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+      <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+          <li class="layui-nav-item layui-nav-itemed">
+            <a class="" href="javascript:;">商品管理</a>
+            <dl class="layui-nav-child">
+              <dd>
+                <a href="goods_list.html">商品列表</a>
+              </dd>
+              <dd>
+                <a href="goods_type.html">商品分类</a>
+              </dd>
+              <dd>
+                <a href="goods_add.html">添加商品</a>
+              </dd>
+            </dl>
+          </li>
+          <li class="layui-nav-item">
+            <a href="javascript:;">用户管理</a>
+            <dl class="layui-nav-child">
+              <dd>
+                <a href="userlist.html">用户列表</a>
+              </dd>
+              <dd>
+                <a href="user_add.html">添加用户</a>
+              </dd>
+            </dl>
+          </li>
+          <li class="layui-nav-item">
+            <a href="javascript:;">订单管理</a>
+            <dl class="layui-nav-child">
+              <dd>
+                <a href="order_list.html">订单列表</a>
+              </dd>
+            </dl>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="layui-body">
+      <!-- 内容主体区域 -->
+      <div style="padding: 15px;">
+        <table class="layui-hide" id="test" lay-filter="test"></table>
+
+        <script type="text/html" id="toolbarDemo">
+          <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm" lay-event="getCheckData">删除选中行数据</button>
+          </div>
+        </script>
+
+        <script type="text/html" id="barDemo">
+          <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+          <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+
+
+        <script>
+          layui.use('table', function () {
+            var table = layui.table;
+            //监听表格复选框选择
+            table.on('checkbox(demo)', function (obj) {
+              console.log(obj)
+            });
+
+            table.render({
+              elem: '#test'
+              , url: '/userlist'
+              , toolbar: '#toolbarDemo'
+              , title: '用户数据表'
+              , cols: [[
+                { type: 'checkbox', fixed: 'left' }
+                , { field: '_id', title: 'ID', width: 80, fixed: 'left', unresize: true, sort: true }
+                , { field: 'username', title: '用户名', width: 120, edit: 'text' }
+                , {
+                  field: 'email', title: '邮箱', width: 150, edit: 'email', templet: function (res) {
+                    return '<em>' + res.email + '</em>'
+                  }
+                }
+                , { field: 'gender', title: '性别', width: 80, edit: 'text', sort: true }
+                , { field: 'birth', title: '生日', width: 100 }
+                , { field: 'details', title: '等级' }
+                , { field: 'mobile', title: '手机号码' }
+                , { field: 'regtime', title: '加入时间', width: 120 }
+                , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150 }
+              ]]
+              , page: true
+            })
+
+
+            //监听行工具事件
+            table.on('tool(test)', function (obj) {
+              var data = obj.data;
+              console.log(data._id)
+              if (obj.event === 'del') { //删除
+                if ($.cookie('details') == '超级会员') {
+                  layer.confirm('真的删除行么', function (index) {
+                    obj.del();
+                    layer.close(index);
+
+                    //发送ajax请求删除数据库的对应数据;
+
+                    let xhr = new XMLHttpRequest;
+                    //get方式参数放open带；post方式放send;
+                    let id = data._id; console.log(id)
+                    xhr.open('get', '/del?_id=' + id, true);
+
+                    //设置请求头,后端得到对象；
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.send();
+                  });
+                } else {
+                  alert('不是超级会员')
+                }
+
+              } else if (obj.event === 'edit') { //编辑
+                if ($.cookie('details') == '超级会员') {
+                  let id = data._id;
+                  location.href = 'bianji.html?' + id; //带用户id跳转到编辑页面
+                } else {
+                  alert('不是超级会员')
+                }
+              }
+            });
+
+            let str = '';
+            table.on('toolbar(test)', function (obj) {
+              if ($.cookie('details') == '超级会员') {
+                var checkStatus = table.checkStatus(obj.config.id)
+                console.log(checkStatus)//获取选中行数据
+                for (key in checkStatus.data) {
+                  str += checkStatus.data[key]._id + ',';
+
+                  //发送请求，删除数据库对应数据；
+                  let xhr = new XMLHttpRequest;
+                  xhr.onload = () => {
+                    if (xhr.status == 200) {
+                      location.reload();
+                    }
+                  }
+                  xhr.open('get', `/del_many?str=${str}`, true);
+                  //设置请求头,后端得到对象；
+                  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                  xhr.send()
+                  console.log(str)
+                }
+              } else {
+                alert('不是超级会员')
+              }
+            });
+
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="layui-footer">
+      <!-- 底部固定区域 -->
+
+    </div>
+  </div>
+  <script>
+    //JavaScript代码区域
+    layui.use('element', function () {
+      var element = layui.element;
+    });
+
+  </script>
+</body>
+
+</html>

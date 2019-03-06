@@ -1,0 +1,38 @@
+.layui-body{
+    h2{
+        display:inline-block;
+        margin-left: 15px;
+    }
+    ul{
+        float:right;
+        li{
+            float: left;
+            width: 90px;
+            font-size: 14px;
+            text-align: center; 
+        }
+    }
+    section{
+        margin-top: 10px;
+        height: 200px;
+        border-top: 1px solid #999; 
+        border-bottom: 1px solid #999;
+        div{
+            float: left;
+            height: 100%;
+            width: 33.3%;
+            text-align: center;
+            vertical-align: middle;
+            span{
+                display: inline-block;
+                margin-top: 60px;
+                font-size: 46px;
+                color: coral;
+            }
+            p{
+                font-size: 16px;
+                margin-top: 18px;
+            }
+        }
+    }
+}
